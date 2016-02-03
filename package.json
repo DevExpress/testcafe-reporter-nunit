@@ -1,0 +1,29 @@
+{
+  "name": "testcafe-reporter-nunit",
+  "version": "1.0.0",
+  "description": "NUnit Test Result XML reporter plugin for TestCafe",
+  "main": "src/index",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreyBelym/testcafe-reporter-nunit.git"
+  },
+  "keywords": [
+    "testcafe",
+    "reporter",
+    "plugin",
+    "nunit"
+  ],
+  "author": "Andrey Belym (belym.a.2105@gmail.com), Alexander Moskovkin (alexander.moskovkin@devexpress.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AndreyBelym/testcafe-reporter-nunit/issues"
+  },
+  "homepage": "https://github.com/AndreyBelym/testcafe-reporter-nunit#readme",
+  "files": [
+    "src",
+    "data"
+  ]
+}
