@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<test-results name="{{name}}" total="{{total}}" failures="{{failures}}" date="{{date}}"
+              time="{{time}}">
+    <test-suite type="Namespace" name="{{name}}" time="{{runTime}}" asserts="0"
+                result="{{result}}" success="{{success}}" executed="True">
+        <results>
+            {{#fixtures}}
+                <test-suite type="TestFixture" name="{{path}} - {{name}}" time="{{time}}" asserts="0"
+                            success="{{success}}" result="{{result}}" executed="True">
+                    <results>
+                        {{#tests}}
+                            <test-case name="{{name}}" time="{{time}}" asserts="0" success="{{success}}"
+                                       executed="True" result="{{result}}">
+                                {{#errs}}
+                                <failure>
+                                    <message>
+                                        {{errs}}
+                                    </message>
+                                </failure>
+                                {{/errs}}
+                            </test-case>
+                        {{/tests}}
+                    </results>
+                </test-suite>
+            {{/fixtures}}
+        </results>
+    </test-suite>
+</test-results>

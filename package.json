@@ -1,11 +1,8 @@
 {
   "name": "testcafe-reporter-nunit",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "NUnit Test Result XML reporter plugin for TestCafe",
   "main": "src/index",
-  "scripts": {
-    "test": "mocha"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AndreyBelym/testcafe-reporter-nunit.git"
@@ -25,5 +22,9 @@
   "files": [
     "src",
     "data"
-  ]
+  ],
+  "dependencies": {
+    "mustache": "^2.2.1",
+    "read-file-relative": "^1.2.0"
+  }
 }
