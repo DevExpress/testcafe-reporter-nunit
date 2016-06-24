@@ -1,5 +1,6 @@
 var readSync = require('read-file-relative').readSync;
 var Mustache = require('mustache');
+var path     = require('path');
 
 
 function successToResult (success) {
@@ -23,8 +24,9 @@ function parseTime (date) {
 }
 
 
-module.exports = function () {
+function NUnitReporterPlugin () {
     return {
+        rootPath: '',
         noColors: true,
 
         testResults:    null,
@@ -32,7 +34,7 @@ module.exports = function () {
 
         reportTaskStart: function (startTime, userAgents, total) {
             this.testResults = {
-                name:  'TestCafe Tests',
+                name:      'TestCafe Tests',
                 total:     total,
                 failures:  0,
                 startTime: startTime,
@@ -59,12 +61,19 @@ module.exports = function () {
         },
 
         reportTestDone: function (name, errs, durationMs) {
-            try {
-                var reporter = this;
-                var testSuccess = !errs.length;
+            var test        = {};
+            var reporter    = this;
+            var testSuccess = !errs.length;
 
-                var test = {
-                    name:    "'" + this.currentFixture.name + "' - " + name,
+            try {
+                var fixtureDir  = path.dirname(this.currentFixture.path);
+                var virtualPath = path.sep;
+
+                if (this.rootPath)
+                    virtualPath += path.relative(this.rootPath, fixtureDir);
+
+                test = {
+                    name:    "'" + path.join(virtualPath, this.currentFixture.name) + "' - " + name,
                     time:    durationMs / 1000,
                     result:  successToResult(testSuccess),
                     success: successToString(testSuccess),
@@ -74,45 +83,66 @@ module.exports = function () {
                                  })
                                  .join('\n\n')
                 };
-
-                this.currentFixture.tests.push(test);
-
-                this.currentFixture.time += test.time;
-
-                if (!testSuccess) {
-                    this.currentFixture.result  = successToResult(false);
-                    this.currentFixture.success = successToString(false);
-                }
             } catch (e) {
-                console.log(e);
+                testSuccess = false;
+
+                test = {
+                    name:    '[' + Date().toLocaleString() + '] Reporter exception on test done',
+                    time:    0,
+                    result:  successToResult(false),
+                    success: successToString(false),
+                    errs:    'Reporter error: ' + e.message + '\n' + e.stack
+                };
+
             }
 
+            this.currentFixture.tests.push(test);
+
+            this.currentFixture.time += test.time;
+
+            if (!testSuccess) {
+                this.currentFixture.result  = successToResult(false);
+                this.currentFixture.success = successToString(false);
+            }
         },
 
         reportTaskDone: function (endTime, passed) {
             try {
                 this.testResults.failures = (this.testResults.total - passed);
 
-                    var startDate = new Date(this.testResults.startTime);
-                    var endDate   = new Date(endTime);
+                var startDate = new Date(this.testResults.startTime);
+                var endDate   = new Date(endTime);
 
-                    this.testResults.date    = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate();
-                    this.testResults.time    = parseTime(endDate);
-                    this.testResults.runTime = (endDate.getTime() - startDate.getTime()) / 1000;
+                this.testResults.date    = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' +
+                                           endDate.getDate();
+                this.testResults.time    = parseTime(endDate);
+                this.testResults.runTime = (endDate.getTime() - startDate.getTime()) / 1000;
 
-                    var success = this.testResults.failures === 0;
+                var success = this.testResults.failures === 0;
 
-                    this.testResults.result  = successToResult(success);
-                    this.testResults.success = successToString(success);
+                this.testResults.result  = successToResult(success);
+                this.testResults.success = successToString(success);
 
-                    var nunitTemplate = readSync('../data/template.mustache');
+                var nunitTemplate = readSync('../data/template.mustache');
 
-                    this.write(Mustache.render(nunitTemplate, this.testResults));
+                this.write(Mustache.render(nunitTemplate, this.testResults));
             } catch (e) {
-                console.log(e);
+                console.log(e.stack);
             }
 
         }
     };
+}
+
+NUnitReporterPlugin.withRootPath = function (rootPath) {
+    return function () {
+        var reporter = NUnitReporterPlugin();
+
+        reporter.rootPath = rootPath;
+
+        return reporter;
+    }
 };
+
+module.exports = NUnitReporterPlugin;
 

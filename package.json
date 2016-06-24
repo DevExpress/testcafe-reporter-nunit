@@ -1,6 +1,6 @@
 {
   "name": "testcafe-reporter-nunit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "NUnit Test Result XML reporter plugin for TestCafe",
   "main": "src/index",
   "repository": {
