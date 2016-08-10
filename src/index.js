@@ -60,10 +60,10 @@ function NUnitReporterPlugin () {
             this.testResults.fixtures.push(this.currentFixture);
         },
 
-        reportTestDone: function (name, errs, durationMs) {
+        reportTestDone: function (name, testRunInfo) {
             var test        = {};
             var reporter    = this;
-            var testSuccess = !errs.length;
+            var testSuccess = !testRunInfo.errs.length;
 
             try {
                 var fixtureDir  = path.dirname(this.currentFixture.path);
@@ -74,10 +74,11 @@ function NUnitReporterPlugin () {
 
                 test = {
                     name:    "'" + path.join(virtualPath, this.currentFixture.name) + "' - " + name,
-                    time:    durationMs / 1000,
+                    time:    testRunInfo.durationMs / 1000,
                     result:  successToResult(testSuccess),
                     success: successToString(testSuccess),
-                    errs:    errs
+                    errs:    testRunInfo
+                                 .errs
                                  .map(function (err) {
                                      return reporter.formatError(err);
                                  })
