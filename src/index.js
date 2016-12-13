@@ -67,13 +67,16 @@ function NUnitReporterPlugin () {
 
             try {
                 var fixtureDir  = path.dirname(this.currentFixture.path);
-                var virtualPath = path.sep;
+                var fixtureName = this.currentFixture.name;
 
-                if (this.rootPath)
-                    virtualPath += path.relative(this.rootPath, fixtureDir);
+                if (this.rootPath) {
+                    var virtualPath = path.sep + path.relative(this.rootPath, fixtureDir);
+
+                    fixtureName = path.join(virtualPath, fixtureName);
+                }
 
                 test = {
-                    name:    "'" + path.join(virtualPath, this.currentFixture.name) + "' - " + name,
+                    name:    "'" + fixtureName + "' - " + name,
                     time:    testRunInfo.durationMs / 1000,
                     result:  successToResult(testSuccess),
                     success: successToString(testSuccess),
