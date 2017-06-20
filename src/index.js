@@ -76,7 +76,7 @@ function NUnitReporterPlugin () {
                 }
 
                 test = {
-                    name:    "'" + fixtureName + "' - " + name,
+                    name:    "'" + fixtureName + "' - " + name + (testRunInfo.unstable ? ' (unstable)' : ''),
                     time:    testRunInfo.durationMs / 1000,
                     result:  successToResult(testSuccess),
                     success: successToString(testSuccess),
